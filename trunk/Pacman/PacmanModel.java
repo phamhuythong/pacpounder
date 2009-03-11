@@ -4,7 +4,7 @@ import java.awt.Point;
 import java.util.Observable;
 /**
  * 
- * @author Steve Legere
+ * @author Steve Legere, Jason Brown
  *
  */
 public class PacmanModel extends Observable {
