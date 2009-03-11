@@ -1,24 +1,21 @@
 package jamost.pacman;
-/*
- * This class should be the main class for pacman
- * it will initialize the model, view, and controller
- * and enable the view to visible
+/**
  * 
- * @author Mohamed Elzayat, Jason Brown
- * @ version 1.0 February 16, 2009.
+ * @author Mohamed Elzayat
+ * @version 1.2 March 1, 2009.
+ * PacmanGame initialises the model view and controller and link them together
+ *
  */
+
 public class PacmanGame {
-	PacmanView view;
-	PacmanController controller;
-	PacmanModel model;
-	// the constructor initialize the mode, view, and controller
-	// and set view to visible
-	public PacmanGame(){
-	  model = new PacmanModel();
-	  view = new PacmanView(model);
-	  controller = new PacmanController(view,model);
-	  
-	  view.setVisible(true);
+	
+	
+	public static void main(String[] args) {
+		PacmanModel model = new PacmanModel();
+		PacmanView view = new PacmanView(model);
+		PacmanController controller =  new PacmanController(view,model);
+		view.setVisible(true);
+		
 	}
 
 }
