@@ -27,17 +27,13 @@ abstract class Character {
 	 * returns a boolean depending on success or failure.
 	 */
 	public Boolean setPosition(Point p) {
-		p.setLocation(p);
+		this.p.setLocation(p);
 		return true;
 	}
 
 	// Abstract methods which are called to change the characters
 	// location
-	abstract void moveUp();
+	//abstract void move(int direction);
 
-	abstract void moveDown();
-
-	abstract void moveLeft();
-
-	abstract void moveRight();
 }
+
