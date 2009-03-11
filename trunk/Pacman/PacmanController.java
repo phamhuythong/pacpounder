@@ -1,40 +1,70 @@
 package jamost.pacman;
 
-/* This is the pacman controller class. It accepts user input via
- * the keyboard to control the movement of pacman. It contains an
- * instance of both the view and the model.
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.awt.*; 
+import java.awt.event.*;
+/**
  * 
- * @author Mohamed Elzayat, Jason Brown
- * @ version 1.0 February 16, 2009.
+ * @author Mohamed Elzayat
+ * @version 1.2 March 2, 2009.
+ * The PacmanController implements keyListener and 
+ * according to key input from the user "Up", "Down", 
+ * "Left" or "Right" a call is made to the Model
+ * to execute the proper command
  */
-public class PacmanController {
-	PacmanView view;
-	PacmanModel model;
-
-	// Constructor initializes the view and model fields
-	public PacmanController(PacmanView view, PacmanModel model) {
-		this.view = view;
+public class PacmanController implements KeyListener {
+	private PacmanView view;
+	private PacmanModel model;
+	final static int UP = 1;
+	final static int DOWN = 2;
+	final static int LEFT = 3;
+	final static int RIGHT = 4;
+	
+	
+	public PacmanController(PacmanView view, PacmanModel model){
 		this.model = model;
+		this.view = view;
+		
+		view.addKeyListener(this);
+		
+	}
+	
+
+	/**
+	 * implements the commands that will be excuted according
+	 * to the key pressed
+	 */
+	public void keyPressed(KeyEvent e){
+		
+		String key = e.getKeyText(e.getKeyCode());
+		if (key == "Up"){
+			model.move(UP);
+		}
+		else if(key == "Down"){
+			model.move(DOWN);
+		}
+		else if(key == "Right"){
+			model.move(RIGHT);
+		}
+		else if(key == "Left"){
+			model.move(LEFT);
+		}
 	}
 
-	// Request a move up
-	public void requestMoveUp() {
 
+
+	// Nothing happens here, not needed
+	public void keyReleased(KeyEvent e) {
+		
 	}
 
-	// Request a move down
-	public void requestMoveDown() {
 
+
+	// Nothing happens here, not needed
+	public void keyTyped(KeyEvent e) {
+		
 	}
-
-	// Request a move left
-	public void requestMoveLeft() {
-
-	}
-
-	// Request a move right
-	public void requestMoveRight() {
-
-	}
+	
 
 }

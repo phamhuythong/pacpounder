@@ -1,25 +1,29 @@
 package jamost.pacman;
+
 /*
- * This class keeps the score of the player in the game
- * 
- * @author Mohamed Elzayat, Jason Brown
- * @ version 1.0 February 16, 2009.
+ * @author: Steve Legere
+ * @version: 02.03.09
  */
 public class Score {
+	
+	private static final int DEFAULT_SCORE = 0;
+	private static final int DEFAULT_INCREMENT = 10;
+	
 	private int score;
-	final static int DEFAULT_SCORE=0
-	// the constructor of score initializes score
-	// to its default valu 0
-	public Score(){
+	
+	public Score() {
 		score = DEFAULT_SCORE;
 	}
-	// returns the current score
-	public int getScore(){
-		return 0;
+	public int getScore() {
+		return score;
 	}
-	// increments the score
-	public void updateScore(){
-		
+	
+	public void setScore(int score) {
+		this.score = score;
 	}
-
+	
+	public void incrementScore() {
+		score += DEFAULT_INCREMENT;
+	}
 }
+

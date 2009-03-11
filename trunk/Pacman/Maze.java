@@ -2,51 +2,72 @@ package jamost.pacman;
 
 import java.awt.Point;
 
-/* Maze is based on 2 dimensional integer array. This class stores
- * the information related to the board, empty space, dots and walls.
- * Currently it contains 28 rows and 25 spaces.
+/**
  * 
- * @author Mohamed Elzayat, Jason Brown
- * @ version 1.0 February 16, 2009.
+ * @author Steve Legere
+ *
  */
 public class Maze {
-	private static final int EMPTY_SPACE = 0;
-	private static final int DOT = 1;
-	private static final int WALL = 2;
-	private static final int ROWS = 28;
-	private static final int COLS = 25;
-	int[][] map;
+	//private static final int EMPTY_SPACE 	= 0;
+	private static final int DOT 			= 1;
+	private static final int WALL			= 2;
+	private static final int COLS			= 25;
+	private static final int ROWS			= 28;
 
-	/*
-	 * The constructor initializes the array to its default size and assigns
-	 * each element its appropriate value.
-	 */
-
+	private int[][] map;
+	private int numberOfDots = 0;
+	
 	public Maze() {
+		
 		map = new int[ROWS][COLS];
-		// assign values to elements
-		// first assign dots to all spaces
-		// next replace dots with walls
+
+		for (int i = 0; i < COLS; ++i) {
+			for (int j = 0; j < ROWS; ++j) {
+				
+				/* Sets all array indices to dots. */
+				setPosition(new Point(i,j), DOT);
+				++numberOfDots;
+				
+				/* Check if at an edge. If so, change the element ID. */
+				if (i == 0 || i == COLS-1 || j == 0 || j == ROWS-1) {
+					if (getPosition(new Point(i,j)) != WALL) {
+						setPosition(new Point(i,j), WALL);
+						--numberOfDots;
+					}
+				}
+				/* Make the 11 top and bottom wall columns. */
+				if (((j >= 2 && j <= 5) || (j >= 14 && j <= 17)) && (i % 2 == 0)) {
+					setPosition(new Point(i,j), WALL);
+					--numberOfDots;
+				}
+				/* Make the wall rows at rows 8 and 11. */
+				if ((j == 8 || j == 11) && ((i >= 2  && i <= 10) || (i >= 14  && i <= 22))) {
+					setPosition(new Point(i,j), WALL);
+					--numberOfDots;
+				}
+				/* Make the bottom 3 rows of walls. */
+				if ((j == 20 || j == 22 || j == 24) && (i >= 6 && i <= 18)) {
+					setPosition(new Point(i,j), WALL);
+					--numberOfDots;
+				}
+			} // end for
+		} // end for
 	}
 
-	/*
-	 * Accepts a point as a parameter and returns an integer value indicating
-	 * what is located at the position in the array.
-	 */
 	public int getPosition(Point p) {
-		return 0;
+		return map[p.y][p.x];
 	}
 
-	/*
-	 * Updates the value assigned to positions in the array, returns a boolean
-	 * value on success or failure
-	 */
-	public Boolean setLocation(Point p, int i) {
-		return false;
+	public Boolean setPosition(Point p, int element) {
+		map[p.y][p.x] = element;
+		return true;
 	}
-
-	// Gets the location of pacman
-	public Point getPacman() {
-		return new Point();
+	
+	public int getDots() {
+		return numberOfDots;
+	}
+	
+	public String toString(){
+		return "The maze currently has " + getDots() + " dots.";
 	}
 }
