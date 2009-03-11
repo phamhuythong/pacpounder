@@ -14,7 +14,9 @@ public class PacmanGame {
 		PacmanModel model = new PacmanModel();
 		PacmanView view = new PacmanView(model);
 		PacmanController controller =  new PacmanController(view,model);
+		view.setSize(945, 700);
 		view.setVisible(true);
+		view.show();
 		
 	}
 
