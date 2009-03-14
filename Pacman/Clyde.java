@@ -11,9 +11,9 @@ import java.util.Random;
  * @ version 2.0 March 1, 2009.
  */
 public class Clyde extends Character implements Ghost, Observer{
-	int lastMoveDirection=DOWN, number;
+	int lastMoveDirection=UP, number;
 	Point pacman;
-	Random random = new Random();
+	Random random;
 	Maze maze;
 	/*
 	 * The constructor will initialize the original position of the ghost on the
@@ -25,14 +25,15 @@ public class Clyde extends Character implements Ghost, Observer{
 	public Clyde(Point p) {
 		super(p);
 		maze = new Maze();
-		pacman = new Point(1,1);
+		pacman = new Point(12,7);
+		random = new Random();
 	}
 
 	public void update(Observable o, Object arg1) {
 		PacmanModel model = (PacmanModel) o;
 		pacman = model.pacman.getPosition();
 		number = random.nextInt(4);
-		if (number == 4)
+		if (number == 3)
 			moveRandom();				
 		else
 			move(pacman);
@@ -43,7 +44,7 @@ public class Clyde extends Character implements Ghost, Observer{
 		boolean success = false;
 		int xGhost = super.getPosition().x;
 		int yGhost = super.getPosition().y;
-		while (success == false) {
+		while (! success ) {
 			number = random.nextInt(3);
 			if (number == 0) {		//attempt to move up
 									//if up is legal
@@ -110,7 +111,6 @@ public class Clyde extends Character implements Ghost, Observer{
 			//if up is legal
 			if (maze.getPosition(new Point(xGhost, yGhost-1))!= WALL) {
 				super.setPosition(new Point(xGhost, yGhost-1)); //move up
-				lastMoveDirection = UP;
 				return true;
 			}
 			return false;
@@ -119,7 +119,6 @@ public class Clyde extends Character implements Ghost, Observer{
 			//if down is legal
 			if (maze.getPosition(new Point(xGhost, yGhost+1))!= WALL) {
 				super.setPosition(new Point(xGhost, yGhost+1)); //move down
-				lastMoveDirection = DOWN;
 				return true;
 			}
 			return false;
@@ -128,7 +127,6 @@ public class Clyde extends Character implements Ghost, Observer{
 			//if left is legal
 			if (maze.getPosition(new Point(xGhost-1, yGhost))!= WALL) {
 				super.setPosition(new Point(xGhost-1, yGhost)); //move left
-				lastMoveDirection = LEFT;
 				return true;
 			}
 			return false;
@@ -137,7 +135,6 @@ public class Clyde extends Character implements Ghost, Observer{
 			//if right is legal
 			if (maze.getPosition(new Point(xGhost+1, yGhost))!= WALL) {
 				super.setPosition(new Point(xGhost+1, yGhost)); //move right
-				lastMoveDirection = RIGHT;
 				return true;
 			}
 			return false;
@@ -155,6 +152,7 @@ public class Clyde extends Character implements Ghost, Observer{
 		if ((yGhost - pacman.y) > 0) {									//pacman is above the ghost
 			if (maze.getPosition(new Point(xGhost, yGhost-1))!= WALL) {	//2 indicates a wall
 				super.setPosition(new Point(xGhost,yGhost-1));				//set the new position of the ghost, move up
+				lastMoveDirection = UP;
 				return true;												//return true
 			}
 			return false;	//if the move can't be made return false attempt to move in the X direction
@@ -162,6 +160,7 @@ public class Clyde extends Character implements Ghost, Observer{
 		else {	//pacman is below the ghost
 			if (maze.getPosition(new Point(xGhost, yGhost+1))!= WALL) {	//if its not a wall move there
 				super.setPosition(new Point(xGhost,yGhost+1));				//set the new position of the ghost, move down
+				lastMoveDirection = DOWN;
 				return true;
 			}
 			return false;	//if the move can't be made return false attempt to move in the Y direction
@@ -177,6 +176,7 @@ public class Clyde extends Character implements Ghost, Observer{
 		if ((xGhost - pacman.x) > 0) {									//pacman is to the left of the ghost
 			if (maze.getPosition(new Point(xGhost-1, yGhost))!= WALL) {	//2 indicates a wall
 				super.setPosition(new Point(xGhost-1,yGhost));				//set the new position of the ghost, move left
+				lastMoveDirection = LEFT;
 				return true;												//return true
 			}
 			return false;	//if the move can't be made return false attempt to move in the X direction
@@ -184,12 +184,16 @@ public class Clyde extends Character implements Ghost, Observer{
 		else {	//pacman is to the right of the ghost
 			if (maze.getPosition(new Point(xGhost+1, yGhost))!= WALL) {	//if its not a wall move there
 				super.setPosition(new Point(xGhost+1,yGhost));				//set the new position of the ghost, move right
+				lastMoveDirection = RIGHT;
 				return true;
 			}
 			return false;	//if the move can't be made return false attempt to move in the X direction
 		}
 		
 	}
-
+	
+	public int getLastDirection() {
+		return lastMoveDirection;
+	}
 
 }

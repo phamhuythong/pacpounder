@@ -35,7 +35,7 @@ public class Pinky extends Character implements Ghost, Observer{
 
 	public void move(Point pacman) {
 		//first attempt to continue moving in the same direction as the last move
-		if (repeatLastMove()==true)
+		if (repeatLastMove())
 			return;
 		
 		/* Unable to move in the same direction as last time, now look for the next best move *****************************
@@ -45,9 +45,10 @@ public class Pinky extends Character implements Ghost, Observer{
 		
 		int xDifference = Math.abs(super.getPosition().x - pacman.x);
 		int yDifference = Math.abs(super.getPosition().y - pacman.y);
-		if (xDifference > yDifference)
+		if (xDifference > yDifference) {
 			if (!(moveXDirection()))
 				moveYDirection();
+		}
 		else {
 			if (!(moveYDirection()))
 				moveXDirection();
@@ -65,7 +66,6 @@ public class Pinky extends Character implements Ghost, Observer{
 			//if up is legal
 			if (maze.getPosition(new Point(xGhost, yGhost-1))!= WALL) {
 				super.setPosition(new Point(xGhost, yGhost-1)); //move up
-				lastMoveDirection = UP;
 				return true;
 			}
 			return false;
@@ -74,7 +74,6 @@ public class Pinky extends Character implements Ghost, Observer{
 			//if down is legal
 			if (maze.getPosition(new Point(xGhost, yGhost+1))!= WALL) {
 				super.setPosition(new Point(xGhost, yGhost+1)); //move down
-				lastMoveDirection = DOWN;
 				return true;
 			}
 			return false;
@@ -83,7 +82,6 @@ public class Pinky extends Character implements Ghost, Observer{
 			//if left is legal
 			if (maze.getPosition(new Point(xGhost-1, yGhost))!= WALL) {
 				super.setPosition(new Point(xGhost-1, yGhost)); //move left
-				lastMoveDirection = LEFT;
 				return true;
 			}
 			return false;
@@ -92,7 +90,6 @@ public class Pinky extends Character implements Ghost, Observer{
 			//if right is legal
 			if (maze.getPosition(new Point(xGhost+1, yGhost))!= WALL) {
 				super.setPosition(new Point(xGhost+1, yGhost)); //move right
-				lastMoveDirection = RIGHT;
 				return true;
 			}
 			return false;
@@ -107,6 +104,7 @@ public class Pinky extends Character implements Ghost, Observer{
 		if ((yGhost - pacman.y) > 0) {									//pacman is above the ghost
 			if (maze.getPosition(new Point(xGhost, yGhost-1))!= WALL) {	//2 indicates a wall
 				super.setPosition(new Point(xGhost,yGhost-1));				//set the new position of the ghost, move up
+				lastMoveDirection = UP;
 				return true;												//return true
 			}
 			return false;	//if the move can't be made return false attempt to move in the X direction
@@ -114,6 +112,7 @@ public class Pinky extends Character implements Ghost, Observer{
 		else {	//pacman is below the ghost
 			if (maze.getPosition(new Point(xGhost, yGhost+1))!= WALL) {	//if its not a wall move there
 				super.setPosition(new Point(xGhost,yGhost+1));				//set the new position of the ghost, move down
+				lastMoveDirection = DOWN;
 				return true;
 			}
 			return false;	//if the move can't be made return false attempt to move in the Y direction
@@ -144,6 +143,10 @@ public class Pinky extends Character implements Ghost, Observer{
 			return false;	//if the move can't be made return false attempt to move in the Y direction
 		}
 		
+	}
+	
+	public int getLastDirection() {
+		return lastMoveDirection;
 	}
 
 }

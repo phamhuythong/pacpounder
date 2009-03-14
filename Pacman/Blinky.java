@@ -10,7 +10,7 @@ import java.util.Observer;
  * @ version 2.0 March 1, 2009.
  */
 public class Blinky extends Character implements Ghost, Observer{
-	//int lastMoveDirection = UP;
+	int lastMoveDirection = UP;
 	Point pacman;
 	Maze maze;
 	//PacmanModel model;
@@ -32,9 +32,9 @@ public class Blinky extends Character implements Ghost, Observer{
 		move(pacman);
 	}
 	
-	public Ghost returnBlinky() {
+	/*public Ghost returnBlinky() {
 		return this;		
-	}
+	}*/
 
 	//Blinky the smart ghost
 
@@ -43,9 +43,9 @@ public class Blinky extends Character implements Ghost, Observer{
 		 * 
 		 * If scatter mode is implemented, he may still pursue regardless
 		 */
-		int xDifference, yDifference;
-		xDifference = Math.abs(super.getPosition().x - pacman.x);
-		yDifference = Math.abs(super.getPosition().y - pacman.x);
+		this.pacman = pacman;
+		int xDifference = Math.abs(super.getPosition().x - pacman.x);
+		int yDifference = Math.abs(super.getPosition().y - pacman.y);
 		if (xDifference > yDifference) {
 			if (!(moveXDirection()))
 				moveYDirection();
@@ -63,6 +63,7 @@ public class Blinky extends Character implements Ghost, Observer{
 		if ((yGhost - pacman.y) > 0) {									//pacman is above the ghost
 			if (maze.getPosition(new Point(xGhost, yGhost-1))!= WALL) {	//2 indicates a wall
 				super.setPosition(new Point(xGhost,yGhost-1));				//set the new position of the ghost, move up
+				lastMoveDirection = UP;
 				return true;												//return true
 			}
 			return false;	//if the move can't be made return false attempt to move in the X direction
@@ -71,6 +72,7 @@ public class Blinky extends Character implements Ghost, Observer{
 			
 			if (maze.getPosition(new Point(xGhost, yGhost+1))!= WALL) {	//if its not a wall move there
 				super.setPosition(new Point(xGhost,yGhost+1));				//set the new position of the ghost, move down
+				lastMoveDirection = DOWN;
 				
 				return true;
 			}
@@ -88,7 +90,7 @@ public class Blinky extends Character implements Ghost, Observer{
 		if ((xGhost - pacman.x) > 0) {									//pacman is to the left of the ghost
 			if (maze.getPosition(new Point(xGhost-1, yGhost))!= WALL) {	//2 indicates a wall
 				super.setPosition(new Point(xGhost-1,yGhost));				//set the new position of the ghost, move left
-				//lastMoveDirection = LEFT;
+				lastMoveDirection = LEFT;
 				return true;												//return true
 			}
 			return false;	//if the move can't be made return false attempt to move in the Y direction
@@ -96,12 +98,17 @@ public class Blinky extends Character implements Ghost, Observer{
 		else {	//pacman is to the right of the ghost
 			if (maze.getPosition(new Point(xGhost+1, yGhost))!= WALL) {	//if its not a wall move there
 				super.setPosition(new Point(xGhost+1,yGhost));				//set the new position of the ghost, move right
-				//lastMoveDirection = RIGHT;
+				lastMoveDirection = RIGHT;
 				return true;
 			}
 			return false;	//if the move can't be made return false attempt to move in the Y direction
 		}
 		
+	}
+
+
+	public int getLastDirection() {
+		return lastMoveDirection;
 	}
 
 }

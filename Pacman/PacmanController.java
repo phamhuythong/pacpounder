@@ -40,16 +40,22 @@ public class PacmanController implements KeyListener {
 		String key = e.getKeyText(e.getKeyCode());
 		if (key == "Up"){
 			model.move(UP);
+			view.update();
 		}
 		else if(key == "Down"){
 			model.move(DOWN);
+			view.update();
 		}
 		else if(key == "Right"){
 			model.move(RIGHT);
+			view.update();
 		}
 		else if(key == "Left"){
 			model.move(LEFT);
+			view.update();
+			
 		}
+		view.validate();
 	}
 
 
