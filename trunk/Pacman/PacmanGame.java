@@ -2,7 +2,7 @@ package jamost.pacman;
 /**
  * 
  * @author Mohamed Elzayat
- * @version 1.2 March 1, 2009.
+ * @version 1.5 March 11, 2009.
  * PacmanGame initialises the model view and controller and link them together
  *
  */
@@ -14,8 +14,9 @@ public class PacmanGame {
 		PacmanModel model = new PacmanModel();
 		PacmanView view = new PacmanView(model);
 		PacmanController controller =  new PacmanController(view,model);
-		view.setSize(945, 700);
+		view.setSize(700, 760);
 		view.setVisible(true);
+		view.setResizable(false);
 		view.show();
 		
 	}

@@ -6,25 +6,37 @@ import java.util.Observable;
  * 
  * @author Steve Legere, Jason Brown
  *
+ * Class PacmanModel
+ * 
+ * This class is the model for the pacman game. It contains
+ * the maze, pacman and the ghosts. It is an observable class
+ * and is observed by the ghosts.
  */
 public class PacmanModel extends Observable {
-	private static final int UP		= 1;
+	private static final int EMPTY_SPACE = 0;
+	private static final int UP	= 1;
 	private static final int DOWN	= 2;
 	private static final int LEFT	= 3;
 	private static final int RIGHT	= 4;
-	private static final int EMPTY_SPACE = 0;
 	
-	//private static final int DOT			= 1;
-	private static final int WALL			= 2;
+	private static final int WALL		   = 2;
+	private static final int NO_WINNER   = 0;
+	private static final int PACMAN_WINS = 1;
+	private static final int GHOSTS_WIN = 2;
 	
 	Maze maze;
 	Pacman pacman;
+	int pacmansLastMove;
 	private Pinky pinky;
 	private Blinky blinky;
 	private Inky inky;
 	private Clyde clyde;
 	private Score score;
 
+	/* The constructor simply creates the maze, ghosts,
+	 * pacman and the score. It also registers all the
+	 * ghosts as observers of the model
+	 */
 	public PacmanModel() {
 		maze = new Maze();
 		pinky = new Pinky(new Point(12,7));
@@ -33,6 +45,7 @@ public class PacmanModel extends Observable {
 		inky = new Inky(new Point(12,7));
 		pacman = new Pacman(new Point(12,13));
 		score = new Score();
+		pacmansLastMove = 0;	//just so it is initialized
 		
 		addObserver(pinky);
 		addObserver(blinky);
@@ -40,34 +53,82 @@ public class PacmanModel extends Observable {
 		addObserver(inky);
 
 	}
+	
+	/* This method returns accepts a String parameter
+	 * of a ghosts name and returns a integer value 
+	 * corresponding the last direction that ghost moved
+	 * in. -1 if a bad string was passed.
+	 */
+	public int getGhostDirection(String ghost) {
+		if (ghost.equals("Blinky"))
+			return blinky.getLastDirection();
+		else if (ghost.equals("Clyde"))
+			return clyde.getLastDirection();
+		else if (ghost.equals("Inky"))
+			return inky.getLastDirection();
+		else if (ghost.equals("Pinky"))
+			return pinky.getLastDirection();
+		return -1;
+	}
+	
+	/* This method is called to end the game */
+	public void exitGame() {
+		System.exit(0);
+	}
+	
+	/* This method is called to reset the game */
+	public void resetGame() {
+		resetCharacterPositions();
+		maze = new Maze();
+		score.setScore(0);
+	}
+	
+	/* This method is called to reset the position of
+	 * all characters, pacman and the ghosts
+	 */
+	public void resetCharacterPositions() {
+		pinky.setPosition(new Point(12,7));
+		inky.setPosition(new Point(12,7));
+		blinky.setPosition(new Point(12,7));
+		clyde.setPosition(new Point(12,7));
+		pacman.setPosition(new Point(12,13));
+	}
 
+	/* This method move confirms whether a requested move
+	 * for pacman is a valid move. If it is, it updates
+	 * pacmans position 
+	 */
 	public void move(int direction) {
 		int x = pacman.getPosition().x;
 		int y = pacman.getPosition().y;
 		
 		if (direction == UP) {
-			System.out.println("up key was pressed");
+			pacmansLastMove = UP;
+			//System.out.println("up key was pressed");
 			if (maze.getPosition(new Point(x,y-1))!= WALL) {
 				pacman.setPosition(new Point(x,y-1));
 			}
 			updateScoreAndObservers();
 		}
 		else if (direction == DOWN) {
-			System.out.println("DOWN key was pressed");
+			pacmansLastMove = DOWN;
+			//System.out.println("DOWN key was pressed");
 			if (maze.getPosition(new Point(x,y+1))!= WALL) {
 				pacman.setPosition(new Point(x,y+1));
 			}
 			updateScoreAndObservers();
 		}
 		else if (direction == LEFT) {
-			System.out.println("LEFT key was pressed");
+			pacmansLastMove = LEFT;
+			//System.out.println("LEFT key was pressed");
 			if (maze.getPosition(new Point(x-1,y))!= WALL) {
 				pacman.setPosition(new Point(x-1,y));
 			}
 			updateScoreAndObservers();
 		}
 		else if(direction == RIGHT){
-			System.out.println("RIGHT key was pressed");
+			pacmansLastMove = RIGHT;
+			//System.out.println("RIGHT key was pressed");
 			if (maze.getPosition(new Point(x+1,y))!= WALL) {
 				pacman.setPosition(new Point(x+1,y));
 			}
@@ -82,43 +143,33 @@ public class PacmanModel extends Observable {
 	 */
 	private void updateScoreAndObservers() {
 		score.incrementScore();
-		winnerCheck();
-		ghostsWin();				//check to see if pacman moved into a ghost
+		checkForWinners();				//see if pacman has won or moved into a ghost
 		setChanged();
 		notifyObservers();		
-		ghostsWin();				//check to see if the one of the ghosts caught pacman
+		checkForWinners();				//check to see if the one of the ghosts caught pacman
 		System.out.println(this.toString());
 	}
 
-	public boolean winnerCheck() {
+	/* This method determines whether pacman or the ghosts have
+	 * won the game. It returns an integer to indicate whether or
+	 * not a character has won the game.
+	 */
+	public int checkForWinners() {
 		if (maze.getDots()==0)
-			return true;
-		return false;				//A method should be added to the maze to check for this
+			return PACMAN_WINS;
+		if (inky.getPosition().equals(pacman.getPosition()) || pinky.getPosition().equals(pacman.getPosition()) || blinky.getPosition().equals(pacman.getPosition()) || clyde.getPosition().equals(pacman.getPosition())) {
+			System.out.println("The ghosts got you!, You lose!!");
+			return GHOSTS_WIN;
+		}
+		return NO_WINNER;
 	}
 	
-	public boolean ghostsWin() {
-		if (inky.getPosition().equals(pacman.getPosition())) {
-			System.out.println("inky got you!, You lose!!");
-			System.exit(0);
-			return true;
-		}
-		if (pinky.getPosition().equals(pacman.getPosition())) {
-			System.out.println("pinky got you!, You lose!!");
-			System.exit(0);
-			return true;
-		}
-		if (blinky.getPosition().equals(pacman.getPosition())) {
-			System.out.println("blinky got you!, You lose!!");
-			System.exit(0);
-			return true;
-		}
-		if (clyde.getPosition().equals(pacman.getPosition())) {
-			System.out.println("clyde got you!, You lose!!");
-			System.exit(0);
-			return true;
-		}
-		return false;
+	/* Returns a copy of the maze */
+	public Maze getMaze(){
+		return maze;
 	}
+	
+	/* Returns the current state of the game */
 	public String toString(){
 		String Pinky = this.pinky.getPosition().toString();
 		String Inky = this.inky.getPosition().toString();
@@ -130,4 +181,34 @@ public class PacmanModel extends Observable {
 		return Status + "Pacman's position " + Pacman + "\n" + "Pinky's postion " + Pinky + "\n" + "Inky's postion " + Inky + "\n"
 		+ "Blinky's postion " + Blinky + "\n" + "Clyde's postion " + Clyde+"\n"+ maze.toString()+"\n-----------------------";
 	}
+	
+	/* Returns pacman's position as a point*/
+	public Point getPacmanPosition(){
+		return pacman.getPosition();
+	}
+	/* Returns pinky's position as a point*/
+	public Point getPinky(){
+		return pinky.getPosition();
+	}
+	/* Returns inky's position as a point*/
+	public Point getInky(){
+		return inky.getPosition();
+	}
+	/* Returns blinky's position as a point*/
+	public Point getBlinky(){
+		return blinky.getPosition();
+	}
+	/* Returns clyde's position as a point*/
+	public Point getClyde(){
+		return clyde.getPosition();
+	}
+	/* Returns the score as an integer */
+	public int getScore(){
+		return score.getScore();
+	}
+	
+	public int getPacmansLastMove() {
+		return pacmansLastMove;
+	}
+	
 }

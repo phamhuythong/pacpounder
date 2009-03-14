@@ -58,13 +58,12 @@ public class Inky extends Character implements Ghost, Observer{
 	 * move he made. This method does just that.
 	 */
 	private boolean repeatLastMove() {
-		int xGhost=(int) super.getPosition().getX();
-		int yGhost=(int) super.getPosition().getY();
+		int xGhost=(int) super.getPosition().x;
+		int yGhost=(int) super.getPosition().y;
 		if (lastMoveDirection == UP) {		//attempt to move up
 			//if up is legal
 			if (maze.getPosition(new Point(xGhost, yGhost-1))!= WALL) {
 				super.setPosition(new Point(xGhost, yGhost-1)); //move up
-				lastMoveDirection = UP;
 				return true;
 			}
 			return false;
@@ -73,7 +72,6 @@ public class Inky extends Character implements Ghost, Observer{
 			//if down is legal
 			if (maze.getPosition(new Point(xGhost, yGhost+1))!= WALL) {
 				super.setPosition(new Point(xGhost, yGhost+1)); //move down
-				lastMoveDirection = DOWN;
 				return true;
 			}
 			return false;
@@ -82,7 +80,6 @@ public class Inky extends Character implements Ghost, Observer{
 			//if left is legal
 			if (maze.getPosition(new Point(xGhost-1, yGhost))!= WALL) {
 				super.setPosition(new Point(xGhost-1, yGhost)); //move left
-				lastMoveDirection = LEFT;
 				return true;
 			}
 			return false;
@@ -91,7 +88,6 @@ public class Inky extends Character implements Ghost, Observer{
 			//if right is legal
 			if (maze.getPosition(new Point(xGhost+1, yGhost))!= WALL) {
 				super.setPosition(new Point(xGhost+1, yGhost)); //move right
-				lastMoveDirection = RIGHT;
 				return true;
 			}
 			return false;
@@ -106,6 +102,7 @@ public class Inky extends Character implements Ghost, Observer{
 		if ((yGhost - pacman.y) > 0) {									//pacman is above the ghost
 			if (maze.getPosition(new Point(xGhost, yGhost-1))!= WALL) {	//2 indicates a wall
 				super.setPosition(new Point(xGhost,yGhost-1));				//set the new position of the ghost, move up
+				lastMoveDirection = UP;
 				return true;												//return true
 			}
 			return false;	//if the move can't be made return false attempt to move in the X direction
@@ -113,6 +110,7 @@ public class Inky extends Character implements Ghost, Observer{
 		else {	//pacman is below the ghost
 			if (maze.getPosition(new Point(xGhost, yGhost+1))!= WALL) {	//if its not a wall move there
 				super.setPosition(new Point(xGhost,yGhost+1));				//set the new position of the ghost, move down
+				lastMoveDirection = DOWN;
 				return true;
 			}
 			return false;	//if the move can't be made return false attempt to move in the Y direction
@@ -143,6 +141,10 @@ public class Inky extends Character implements Ghost, Observer{
 			return false;	//if the move can't be made return false attempt to move in the Y direction
 		}
 		
+	}
+	
+	public int getLastDirection() {
+		return lastMoveDirection;
 	}
 
 }

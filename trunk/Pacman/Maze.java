@@ -64,10 +64,21 @@ public class Maze {
 	}
 	
 	public int getDots() {
+		 // numberOfDots=0;
+		//for (int i = 0; i < COLS; ++i) {
+			//for (int j = 0; j < ROWS; ++j) {
+				//if(map[i][j]==DOT){
+					//numberOfDots++;
+				//}
+			//}
+		//}
 		return numberOfDots;
 	}
 	
 	public String toString(){
 		return "The maze currently has " + getDots() + " dots.";
+	}
+	public int[][] getArray(){
+		return map;
 	}
 }
