@@ -11,6 +11,7 @@ import java.awt.Point;
  */
 abstract class Character {
 	private Point p;
+	protected int lastMoveDirection;
 
 	// Constructor
 	public Character(Point p) {
@@ -29,6 +30,14 @@ abstract class Character {
 	public Boolean setPosition(Point p) {
 		this.p.setLocation(p);
 		return true;
+	}
+
+	public int getLastDirection() {
+		return lastMoveDirection;
+	}
+	
+	public void setLastDirection(int direction) {
+		lastMoveDirection = direction;
 	}
 
 	// Abstract methods which are called to change the characters
