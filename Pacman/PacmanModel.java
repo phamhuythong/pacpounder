@@ -1,6 +1,11 @@
 package jamost.pacman;
 
 import java.awt.Point;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.Serializable;
 import java.util.Observable;
 /**
  * 
@@ -12,21 +17,20 @@ import java.util.Observable;
  * the maze, pacman and the ghosts. It is an observable class
  * and is observed by the ghosts.
  */
-public class PacmanModel extends Observable {
+public class PacmanModel extends Observable  implements Serializable{
 	private static final int EMPTY_SPACE = 0;
 	private static final int UP	= 1;
 	private static final int DOWN	= 2;
 	private static final int LEFT	= 3;
 	private static final int RIGHT	= 4;
 	
-	private static final int WALL		   = 2;
+	private static final int WALL		 = 2;
 	private static final int NO_WINNER   = 0;
 	private static final int PACMAN_WINS = 1;
-	private static final int GHOSTS_WIN = 2;
+	private static final int GHOSTS_WIN  = 2;
 	
-	Maze maze;
-	Pacman pacman;
-	int pacmansLastMove;
+	private Maze maze;
+	private Pacman pacman;
 	private Pinky pinky;
 	private Blinky blinky;
 	private Inky inky;
@@ -37,15 +41,20 @@ public class PacmanModel extends Observable {
 	 * pacman and the score. It also registers all the
 	 * ghosts as observers of the model
 	 */
-	public PacmanModel() {
+	public PacmanModel() throws IOException, ClassNotFoundException {
+		FileInputStream fis = new FileInputStream("lll.txt");
+		ObjectInputStream ois = new ObjectInputStream(fis);
+		Object object = ois.readObject();
 		maze = new Maze();
+		if (object instanceof Maze)
+				maze = (Maze) object;
+		fis.close();
 		pinky = new Pinky(new Point(12,7));
 		blinky = new Blinky(new Point(12,7));
 		clyde = new Clyde(new Point(12,7));
 		inky = new Inky(new Point(12,7));
 		pacman = new Pacman(new Point(12,13));
 		score = new Score();
-		pacmansLastMove = 0;	//just so it is initialized
 		
 		addObserver(pinky);
 		addObserver(blinky);
@@ -99,41 +108,8 @@ public class PacmanModel extends Observable {
 	 * pacmans position 
 	 */
 	public void move(int direction) {
-		int x = pacman.getPosition().x;
-		int y = pacman.getPosition().y;
-		
-		if (direction == UP) {
-			pacmansLastMove = UP;
-			//System.out.println("up key was pressed");
-			if (maze.getPosition(new Point(x,y-1))!= WALL) {
-				pacman.setPosition(new Point(x,y-1));
-			}
-			updateScoreAndObservers();
-		}
-		else if (direction == DOWN) {
-			pacmansLastMove = DOWN;
-			//System.out.println("DOWN key was pressed");
-			if (maze.getPosition(new Point(x,y+1))!= WALL) {
-				pacman.setPosition(new Point(x,y+1));
-			}
-			updateScoreAndObservers();
-		}
-		else if (direction == LEFT) {
-			pacmansLastMove = LEFT;
-			//System.out.println("LEFT key was pressed");
-			if (maze.getPosition(new Point(x-1,y))!= WALL) {
-				pacman.setPosition(new Point(x-1,y));
-			}
-			updateScoreAndObservers();
-		}
-		else if(direction == RIGHT){
-			pacmansLastMove = RIGHT;
-			//System.out.println("RIGHT key was pressed");
-			if (maze.getPosition(new Point(x+1,y))!= WALL) {
-				pacman.setPosition(new Point(x+1,y));
-			}
-			updateScoreAndObservers();
-		}
+		pacman.pacmanMove(direction, maze);
+		updateScoreAndObservers();
 		maze.setPosition(pacman.getPosition(), EMPTY_SPACE);
 		
 	}
@@ -208,7 +184,7 @@ public class PacmanModel extends Observable {
 	}
 	
 	public int getPacmansLastMove() {
-		return pacmansLastMove;
+		return pacman.getLastDirection();
 	}
 	
 }
