@@ -43,15 +43,13 @@ public class MazeBuilder implements ActionListener, Serializable{
 	private JButton [][]buttons;
 	private JMenuBar menubar;
 	private JMenu menu;
-	private JMenuItem mi_export, mi_import;
+	private JMenuItem mi_export, mi_import, mi_exportXML, mi_importXML;
 	private int buttonChoice;
 	private boolean mousePressed;
 	private static final int COLS = 25, ROWS = 28;
 	private static final int SPACE = 0, DOT  = 1, WALL = 2;
 	
 	public MazeBuilder() {
-		mousePressed = false;
-		buttonChoice = 0;
 		borderLayout = new BorderLayout();
 		buttons = new JButton[ROWS][COLS];
 		viewFrame = new JFrame();
@@ -64,7 +62,11 @@ public class MazeBuilder implements ActionListener, Serializable{
 		menu = new JMenu("Export");
 		mi_export = new JMenuItem("Export Maze");
 		mi_import = new JMenuItem("Import Maze");
+		mi_exportXML = new JMenuItem("Export Maze to XML");
+		mi_importXML = new JMenuItem("Import Maze to XML");
 		instructions = new JTextArea();
+		buttonChoice = 0;
+		mousePressed = false;
 		createMaze();
 	}
 	
@@ -80,9 +82,13 @@ public class MazeBuilder implements ActionListener, Serializable{
 		wallButton.addActionListener(new controlListener());
 		mi_export.addActionListener(new menuListener());
 		mi_import.addActionListener(new menuListener());
-		instructions.setText("Select a maze piece then\nclick on the maze pieces\nto design your own\ncustom maze!\n\nSelect 'Export' Export Maze\nto save your maze");
+		mi_exportXML.addActionListener(new menuListener());
+		mi_importXML.addActionListener(new menuListener());
+		instructions.setText("Select a maze piece then\nclick and drag the mouse\nto design your own\ncustom maze!\n\nSelect 'Export' Export Maze\nto save your maze");
 		menu.add(mi_export);
 		menu.add(mi_import);
+		menu.add(mi_exportXML);
+		menu.add(mi_importXML);
 		menubar.add(menu);
 		menubar.setVisible(true);
 		viewFrame.setTitle("Pacman Maze Builder");
@@ -182,27 +188,6 @@ public class MazeBuilder implements ActionListener, Serializable{
 		
 	}*/
 	
-	
-	public void exportMazeData() throws IOException {
-		updateMaze();	//update the mazes data
-		String fileName = JOptionPane.showInputDialog("Please enter a file name.");
-		FileOutputStream fos = new FileOutputStream(fileName+".txt");
-		ObjectOutputStream oos = new ObjectOutputStream(fos);
-		oos.writeObject(maze);
-		fos.close();	
-	}
-	
-	public void importMazeData() throws IOException, ClassNotFoundException {
-		String fileName = JOptionPane.showInputDialog("Please enter a maze name to open.");
-		FileInputStream fis = new FileInputStream(fileName+".txt");
-		ObjectInputStream ois = new ObjectInputStream(fis);
-		Object object = ois.readObject();
-		if (object instanceof Maze)
-				maze = (Maze) object;
-		fis.close();
-		rebuildMaze();
-	}
-	
 	private class controlListener implements ActionListener {
 
 		public void actionPerformed(ActionEvent e) {
@@ -239,7 +224,16 @@ public class MazeBuilder implements ActionListener, Serializable{
 					ee.printStackTrace();
 				}
 			}
-			
+			if (item.getText().equals("Import Maze to XML")) {
+				importMazeDataFromXML();
+			}
+			if (item.getText().equals("Export Maze to XML")) {
+				try {
+					exportMazeDataToXML();
+				} catch (IOException e1) {
+					e1.printStackTrace();
+				}
+			}
 		}
 		
 	}
@@ -295,6 +289,51 @@ public class MazeBuilder implements ActionListener, Serializable{
 					   
 			   }
 	     }
+	}
+	
+	public void exportMazeData() throws IOException {
+		updateMaze();	//update the mazes data
+		String fileName = JOptionPane.showInputDialog("Please enter a file name.");
+		FileOutputStream fos = new FileOutputStream(fileName+".txt");
+		ObjectOutputStream oos = new ObjectOutputStream(fos);
+		oos.writeObject(maze);
+		fos.close();	
+	}
+	
+	public void importMazeData() throws IOException, ClassNotFoundException {
+		String fileName = JOptionPane.showInputDialog("Please enter a maze name to open.");
+		FileInputStream fis = new FileInputStream(fileName+".txt");
+		ObjectInputStream ois = new ObjectInputStream(fis);
+		Object object = ois.readObject();
+		if (object instanceof Maze)
+				maze = (Maze) object;
+		fis.close();
+		rebuildMaze();
+	}//function end
+	
+	public void exportMazeDataToXML() throws IOException {
+		FileWriter fw = new FileWriter("maze_xml.txt");
+		fw.write("<Maze>\r\n");
+		for (int i = 0; i < ROWS; i++) {
+			fw.write("<Row>");
+			   for (int j = 0; j < COLS; j++) {
+				   fw.write("<Element>" + maze.getPosition(new Point(i,j)) + "</Element>");
+			   }
+			fw.write("</Row>");
+		}
+		fw.write("</Maze>\r\n");
+		fw.close();	
+	}
+	
+	public void importMazeDataFromXML() throws IOException, ClassNotFoundException {
+		String fileName = JOptionPane.showInputDialog("Please enter a maze name to open.");
+		FileInputStream fis = new FileInputStream(fileName+".txt");
+		ObjectInputStream ois = new ObjectInputStream(fis);
+		Object object = ois.readObject();
+		if (object instanceof Maze)
+				maze = (Maze) object;
+		fis.close();
+		rebuildMaze();
 	}//function end
 	
 }// end of class
