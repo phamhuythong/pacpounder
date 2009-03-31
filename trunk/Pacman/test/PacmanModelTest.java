@@ -1,114 +1,129 @@
 package jamost.pacman.test;
 
-/*
- * @autorh: Jason Brown
- */
-
 import java.awt.Point;
 
-import jamost.pacman.Inky;
 import jamost.pacman.PacmanModel;
 import junit.framework.TestCase;
 
 public class PacmanModelTest extends TestCase {
+	private static final int UP		     = 1;
+	private static final int DOWN		 = 2;
+	private static final int LEFT		 = 3;
+	private static final int RIGHT		 = 4;
+	private static final int EMPTY_SPACE = 0;
+	private static final int DOT 		 = 1;
+	private static final int WALL		 = 2;
 	PacmanModel pm;
-	private static final int UP	= 1;
-	private static final int DOWN	= 2;
-	private static final int LEFT	= 3;
-	private static final int RIGHT	= 4;
 
 	protected void setUp() throws Exception {
 		super.setUp();
 		pm = new PacmanModel();
 	}
 
+	protected void tearDown() throws Exception {
+		super.tearDown();
+	}
+
 	public void testPacmanModel() {
-		PacmanModel constructorTest = new PacmanModel();
+		pm = new PacmanModel();
+	}
+
+	public void testGetLives() {
+		assertEquals(3, pm.getLives());
+	}
+
+	public void testGetLevel() {
+		assertEquals(1, pm.getLevel());
+	}
+
+	public void testMazeGetDots() {
+		assertEquals(246,pm.mazeGetDots());
+		pm.move(RIGHT);
+		assertEquals(245,pm.mazeGetDots());
 	}
 
 	public void testGetGhostDirection() {
-		fail("Not yet implemented");
-	}
-
-	public void testExitGame() {
-		fail("Not yet implemented");
-	}
-
-	public void testResetGame() {
-		fail("Not yet implemented");
+		pm.move(RIGHT);
+		System.out.println(pm.getGhostDirection("Clyde"));
+		assertEquals(UP, pm.getGhostDirection("Clyde"));
 	}
 
 	public void testResetCharacterPositions() {
-		fail("Not yet implemented");
+		pm.move(RIGHT);
+		assertEquals(new Point(13,13),pm.getPacmanPosition());
+		assertEquals(new Point(12,8),pm.getBlinky());
+		assertEquals(new Point(11,7),pm.getInky());
+		assertEquals(new Point(13,7),pm.getPinky());
+		assertEquals(new Point(12,6),pm.getClyde());
+		pm.resetCharacterPositions();
+		assertEquals(new Point(12,13),pm.getPacmanPosition());
+		assertEquals(new Point(12,7),pm.getBlinky());
+		assertEquals(new Point(12,7),pm.getInky());
+		assertEquals(new Point(12,7),pm.getPinky());
+		assertEquals(new Point(12,7),pm.getClyde());
 	}
 
 	public void testMove() {
-		fail("Not yet implemented");
-	}
-
-	public void testCheckForWinners() {
-		assertEquals("Nobody should have won yet",0,pm.checkForWinners());
-	}
-
-	public void testGetMaze() {
-		fail("Not yet implemented");
-	}
-
-	public void testToString() {
-		fail("Not yet implemented");
+		assertEquals(new Point(12,13),pm.getPacmanPosition());
+		pm.move(RIGHT);
+		assertEquals(new Point(13,13),pm.getPacmanPosition());
+		pm.move(DOWN);
+		assertEquals(new Point(13,14),pm.getPacmanPosition());
+		pm.move(RIGHT);pm.move(RIGHT);
+		pm.move(DOWN);pm.move(DOWN);
+		pm.move(LEFT);
+		assertEquals(new Point(14,16),pm.getPacmanPosition());
 	}
 
 	public void testGetPacmanPosition() {
-		assertEquals(new Point(12,13),pm.getPacmanPosition());
-		pm.move(DOWN);
-		System.out.println(pm.getPacmanPosition().x + " " + pm.getPacmanPosition().y);
-		assertEquals(new Point(12,14),pm.getPacmanPosition());
-		System.out.println(pm.getPacmanPosition().x + " " + pm.getPacmanPosition().y);
-		pm.move(LEFT);
-		assertEquals(new Point(12,13),pm.getPacmanPosition());
-		
+		pm.move(RIGHT);
+		assertEquals(new Point(13,13),pm.getPacmanPosition());
 	}
 
 	public void testGetPinky() {
 		assertEquals(new Point(12,7),pm.getPinky());
-		pm.move(DOWN);
-		assertEquals("Pinky should move right",new Point(13,7),pm.getPinky());
 	}
 
 	public void testGetInky() {
-		assertEquals(new Point(12,7),pm.getInky());
-		pm.move(DOWN);
-		assertEquals("Inky should move left",new Point(11,7),pm.getInky());
+		pm.move(LEFT);
+		assertEquals(new Point(11,7),pm.getInky());
 	}
 
 	public void testGetBlinky() {
 		assertEquals(new Point(12,7),pm.getBlinky());
-		pm.move(DOWN);
-		assertEquals("Blinky should follow pacman down",new Point(12,8),pm.getBlinky());
 	}
 
 	public void testGetClyde() {
 		assertEquals(new Point(12,7),pm.getClyde());
-		pm.move(DOWN);
-		assertEquals("Clyde should move up",new Point(12,6),pm.getClyde());
 	}
 
 	public void testGetScore() {
 		assertEquals(0,pm.getScore());
-		pm.move(UP);
+		pm.move(RIGHT);
 		assertEquals(10,pm.getScore());
 	}
 
 	public void testGetPacmansLastMove() {
-		assertEquals(0,pm.getPacmansLastMove());
-		pm.move(UP);
-		assertEquals(UP, pm.getPacmansLastMove());
-		pm.move(LEFT);
-		assertEquals(LEFT, pm.getPacmansLastMove());
 		pm.move(RIGHT);
-		assertEquals(RIGHT, pm.getPacmansLastMove());
+		assertEquals(RIGHT,pm.getPacmansLastMove());
+	}
+
+	public void testGetCharactersLastPosition() {
+		pm.move(RIGHT);
+		assertEquals(new Point(12,7),pm.getCharactersLastPosition("pinky"));
 		pm.move(DOWN);
-		assertEquals(DOWN, pm.getPacmansLastMove());
+		assertEquals(new Point(13,7),pm.getCharactersLastPosition("pinky"));
+	}
+
+	public void testGetLastPositionType() {
+		pm.move(RIGHT);
+		assertEquals(EMPTY_SPACE,pm.getLastPositionType("blinky"));
+	}
+
+	public void testIsCharacterReset() {
+		assertEquals(false, pm.isCharacterReset());
+		pm.setCharacterReset(true);
+		assertEquals(true, pm.isCharacterReset());
 	}
 
 }
