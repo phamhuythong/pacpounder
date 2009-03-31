@@ -1,14 +1,15 @@
 package jamost.pacman;
 
 import java.awt.Point;
+import java.io.Serializable;
 
 /**
  * 
  * @author Steve Legere
  *
  */
-public class Maze {
-	//private static final int EMPTY_SPACE 	= 0;
+public class Maze implements Serializable{
+	private static final int EMPTY_SPACE 	= 0;
 	private static final int DOT 			= 1;
 	private static final int WALL			= 2;
 	private static final int COLS			= 25;
@@ -17,61 +18,37 @@ public class Maze {
 	private int[][] map;
 	private int numberOfDots = 0;
 	
-	public Maze() {
-		
+	public Maze() {	
 		map = new int[ROWS][COLS];
-
-		for (int i = 0; i < COLS; ++i) {
-			for (int j = 0; j < ROWS; ++j) {
-				
-				/* Sets all array indices to dots. */
-				setPosition(new Point(i,j), DOT);
-				++numberOfDots;
-				
-				/* Check if at an edge. If so, change the element ID. */
-				if (i == 0 || i == COLS-1 || j == 0 || j == ROWS-1) {
-					if (getPosition(new Point(i,j)) != WALL) {
-						setPosition(new Point(i,j), WALL);
-						--numberOfDots;
-					}
-				}
-				/* Make the 11 top and bottom wall columns. */
-				if (((j >= 2 && j <= 5) || (j >= 14 && j <= 17)) && (i % 2 == 0)) {
-					setPosition(new Point(i,j), WALL);
-					--numberOfDots;
-				}
-				/* Make the wall rows at rows 8 and 11. */
-				if ((j == 8 || j == 11) && ((i >= 2  && i <= 10) || (i >= 14  && i <= 22))) {
-					setPosition(new Point(i,j), WALL);
-					--numberOfDots;
-				}
-				/* Make the bottom 3 rows of walls. */
-				if ((j == 20 || j == 22 || j == 24) && (i >= 6 && i <= 18)) {
-					setPosition(new Point(i,j), WALL);
-					--numberOfDots;
-				}
-			} // end for
-		} // end for
 	}
 
 	public int getPosition(Point p) {
 		return map[p.y][p.x];
 	}
 
+	/*
+	 * If a space or wall is changed to a dot, increment the number of
+	 * dots. If a dot is removed, decrement the number of dots.
+	 */
 	public Boolean setPosition(Point p, int element) {
+		/* Check if we're creating a dot. If so, increment the count. */
+		if (element == DOT) {
+			if (map[p.y][p.x] == WALL || map[p.y][p.x] == EMPTY_SPACE) {
+				++numberOfDots;
+			}
+		}
+		/* Check if we're removing a dot. If so, decrement the count. */
+		if (element == WALL || element == EMPTY_SPACE) {
+			if (map[p.y][p.x] == DOT) {
+				--numberOfDots;
+			}
+		}
+		/* Change the array element. */
 		map[p.y][p.x] = element;
 		return true;
 	}
 	
 	public int getDots() {
-		 // numberOfDots=0;
-		//for (int i = 0; i < COLS; ++i) {
-			//for (int j = 0; j < ROWS; ++j) {
-				//if(map[i][j]==DOT){
-					//numberOfDots++;
-				//}
-			//}
-		//}
 		return numberOfDots;
 	}
 	
@@ -80,5 +57,14 @@ public class Maze {
 	}
 	public int[][] getArray(){
 		return map;
+	}
+	
+
+	public void incrementNumberOfDots() {
+		numberOfDots++;
+	}
+
+	public void decrementDots() {
+		numberOfDots--;
 	}
 }
